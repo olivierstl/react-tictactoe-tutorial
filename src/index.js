@@ -29,7 +29,10 @@ class Board extends React.Component {
   handleClick(i) {
     /** Copy the array for modification */
     const squares = this.state.squares.slice()
+
     squares[i] = this.state.isXNext ? 'X' : 'O'
+
+    /** Update Board state */
     this.setState({
       squares: squares,
       isXNext: !this.state.isXNext
