@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import './index.css';
 
 function Square(props) {
@@ -17,7 +17,8 @@ class Board extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      squares: Array(9).fill(null)
+      squares: Array(9).fill(null),
+      isXNext: true
     }
   }
 
@@ -28,8 +29,11 @@ class Board extends React.Component {
   handleClick(i) {
     /** Copy the array for modification */
     const squares = this.state.squares.slice()
-    squares[i] = 'X'
-    this.setState({ squares: squares })
+    squares[i] = this.state.isXNext ? 'X' : 'O'
+    this.setState({
+      squares: squares,
+      isXNext: !this.state.isXNext
+    })
   }
 
   /**
@@ -47,11 +51,13 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: X';
+    const status = `Next player: ${this.state.isXNext ? 'X' : 'O'}`;
 
     return (
       <div>
-        <div className="status">{status}</div>
+        <div className="status">
+          { status }
+        </div>
         <div className="board-row">
           { this.renderSquare(0) }
           { this.renderSquare(1) }
