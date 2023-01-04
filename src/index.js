@@ -121,7 +121,7 @@ class Game extends React.Component {
 
     const moves = history.map((step, move) => {
       const desc = move
-        ? `Back to round ${move} (${step.move.column}, ${step.move.row})`
+        ? <span>Back to <b>round {move}</b> ({step.move.column}, {step.move.row})</span>
         : `Restart game`
       
         return (
