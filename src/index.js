@@ -89,11 +89,18 @@ class Game extends React.Component {
 
     squares[i] = this.state.isXNext ? 'X' : 'O'
 
+    const column = getCellColumn(i) 
+    const row = getCellRow(i) 
+
     /** Update Board state */
     this.setState({
       /** Concat better than push : don't edit original array */
       history: history.concat([{
-        squares: squares
+        squares: squares,
+        move: {
+          row: row,
+          column: column
+        }
       }]),
       stepNumber: history.length,
       isXNext: !this.state.isXNext
@@ -114,7 +121,7 @@ class Game extends React.Component {
 
     const moves = history.map((step, move) => {
       const desc = move
-        ? `Back to round ${move}`
+        ? `Back to round ${move} (${step.move.column}, ${step.move.row})`
         : `Restart game`
       
         return (
@@ -150,6 +157,26 @@ class Game extends React.Component {
       </div>
     );
   }
+}
+
+function getCellColumn(cellIndex) {
+  const columns = [
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8]
+  ]
+
+  return columns.findIndex(column => column.includes(cellIndex)) + 1
+}
+
+function getCellRow(cellIndex) {
+  const rows = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8]
+  ]
+
+  return rows.findIndex(row => row.includes(cellIndex)) +1
 }
 
 function calculateWinner(squares) {
