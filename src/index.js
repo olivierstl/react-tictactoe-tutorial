@@ -14,36 +14,6 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      squares: Array(9).fill(null),
-      isXNext: true
-    }
-  }
-
-  /**
-   * Handle click on button inside Square
-   * @param {number} i
-   */
-  handleClick(i) {
-    /** Copy the array for modification */
-    const squares = this.state.squares.slice()
-
-    /** If someone won or the square is already taken */
-    if (calculateWinner(squares) || squares[i]) {
-      return
-    }
-
-    squares[i] = this.state.isXNext ? 'X' : 'O'
-
-    /** Update Board state */
-    this.setState({
-      squares: squares,
-      isXNext: !this.state.isXNext
-    })
-  }
-
   /**
    * Generate square component binded to state.squares
    * @param {number} i
@@ -52,26 +22,15 @@ class Board extends React.Component {
   renderSquare(i) {
     return (
       <Square
-        value={ this.state.squares[i] }
-        onClick={ () => this.handleClick(i) }
+        value={ this.props.squares[i] }
+        onClick={ () => this.props.handleClick(i) }
       />
     )
   }
 
   render() {
-    const winner = calculateWinner(this.state.squares)
-    let status
-    if (winner) {
-      status = `${winner} won`
-    } else {
-      status = `Next player: ${this.state.isXNext ? 'X' : 'O'}`
-    }
-
     return (
       <div>
-        <div className="status">
-          { status }
-        </div>
         <div className="board-row">
           { this.renderSquare(0) }
           { this.renderSquare(1) }
@@ -93,14 +52,69 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      /**
+       * Array of objects.
+       * Each one has a key `squares` which represent the board at time T
+       */
+      history: [{
+        squares: Array(9).fill(null)
+      }],
+      /** `true`: add X to a cell / `false`: add O to a cell */
+      isXNext: true
+    }
+  }
+
+  /**
+   * Handle click on button inside Square
+   * @param {number} i
+   */
+  handleClick(i) {
+    /** Copy the array for modification */
+    const history = this.state.history
+    const current = history[history.length - 1]
+    const squares = current.squares.slice()
+
+    /** If someone won or the square is already taken */
+    if (calculateWinner(squares) || squares[i]) {
+      return
+    }
+
+    squares[i] = this.state.isXNext ? 'X' : 'O'
+
+    /** Update Board state */
+    this.setState({
+      /** Concat better than push : don't edit original array */
+      history: history.concat([{
+        squares: squares
+      }]),
+      isXNext: !this.state.isXNext
+    })
+  }
+
   render() {
+    const history = this.state.history
+    const current = history[history.length - 1]
+    const winner = calculateWinner(current.squares)
+
+    let status
+    if (winner) {
+      status = `${winner} won`
+    } else {
+      status = `Next player: ${this.state.isXNext ? 'X' : 'O'}`
+    }
+
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board
+            squares={ current.squares }
+          />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
+          <div>{ status }</div>
           <ol>{/* TODO */}</ol>
         </div>
       </div>
